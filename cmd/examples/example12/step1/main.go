@@ -47,7 +47,7 @@ var (
 	frameWidth       = 640
 	frameHeight      = 360
 
-	videoFileName = "test_rag_video.mp4"
+	videoFileName = "training.mp4"
 	videoDir      = "zarf/samples/videos/"
 	framesDir     = "frames"
 )
@@ -384,8 +384,9 @@ func createKeyFrameFiles(videoChunkFile string) error {
 		return fmt.Errorf("mkdirall: %w", err)
 	}
 
-	ffmpegCommand := fmt.Sprintf("ffmpeg -skip_frame nokey -i %s -vf \"select='gt(scene,0.05)',scale='if(gt(iw,ih),%d,-1)':'if(gt(ih,iw),%d,-1)'\" -fps_mode vfr -frame_pts true -loglevel error zarf/samples/videos/%s/%s/%%05d.png", videoChunkFile, frameWidth, frameHeight, framesDir, chunkName)
+	ffmpegCommand := fmt.Sprintf("ffmpeg -skip_frame nokey -i %s -vf \"scale='if(gt(iw,ih),%d,-1)':'if(gt(ih,iw),%d,-1)'\" -fps_mode vfr -frame_pts true -loglevel error zarf/samples/videos/%s/%s/%%05d.png", videoChunkFile, frameWidth, frameHeight, framesDir, chunkName)
 
+	fmt.Printf("keyFrameCommand: %s\n", ffmpegCommand)
 	out, err := exec.Command("/bin/sh", "-c", ffmpegCommand).CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("error while running ffmpeg: %w: %s", err, string(out))
